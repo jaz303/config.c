@@ -160,6 +160,7 @@ PARSER_FUNCTION(int, parse_fixed_int, int *out, int len) {
     // FIXME: not sure if this belongs here.
     if (is_digit())
         ERROR("trailing digits on fixed-length int");
+    return PARSER_OK;
 }
 
 PARSER_FUNCTION(int, parse_boolean, const char *cmp, int val, cfg_obj_t **obj) {
