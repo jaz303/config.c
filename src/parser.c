@@ -163,6 +163,14 @@ PARSER_FUNCTION(int, parse_fixed_int, int *out, int len) {
 }
 
 PARSER_FUNCTION(int, parse_boolean, const char *cmp, int val, cfg_obj_t **obj) {
+    // TODO: this is rank and highlights exactly why tokenizing should be a separate phase.
+    // this function will happily leave unconsumed characters once a valid boolean ident
+    // has been found.
+    // there should be a separate function for parsing an identifier that returns the length
+    // of the identifier starting at curr(), and a fixed length compare function.
+    //
+    // or do it properly and use a fucking tokenizer.
+    //
     while (*cmp && *cmp == curr()) { cmp++; next(); }
     if (*cmp == '\0') {
         PARSER_ALLOC(integer, cfg_obj_integer_t);
