@@ -37,8 +37,6 @@
 #define PARSER_NUMBER_INT       1
 #define PARSER_NUMBER_FLOAT     2
 
-#include <stdio.h>
-
 union parsed_number_value {
     cfg_int_t       v_int;
     cfg_float_t     v_float;
