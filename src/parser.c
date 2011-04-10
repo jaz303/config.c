@@ -25,7 +25,7 @@
 #define is_number_start() (curr() == '-' || is_digit())
 #define is_whitespace() (curr() == ' ' || curr() == '\n' || curr() == '\r' || curr() == '\t')
         
-#define skip_whitespace() { while (is_whitespace()) next(); }
+#define skip_whitespace() parser_skip_whitespace(p)
 
 #define SET_ERROR(msg) p->error = msg
 #define ERROR(msg) \
@@ -47,6 +47,7 @@ struct parsed_number {
     union parsed_number_value   value;
 };
 
+PARSER_FUNCTION(void, parser_skip_whitespace);
 PARSER_FUNCTION(char*, copy_fixed_string, const char* start, int len);
 PARSER_FUNCTION(int, parse_number, struct parsed_number *out);
 PARSER_FUNCTION(int, parse_fixed_int, int *out, int len);
@@ -78,6 +79,23 @@ int cfg_parse(cfg_parser_t *p, cfg_obj_dict_t **out) {
 
 //
 // End Public Interface
+
+PARSER_FUNCTION(void, parser_skip_whitespace) {
+	do {
+		if (curr() == '#') {
+			while (curr() != '\n' && curr() != '\r' && curr() != '\0') {
+				next();
+			}
+		} else if (is_whitespace()) {
+			next();
+			while (is_whitespace()) {
+				next();
+			}
+		} else {
+			break;
+		}
+	} while(1);
+}
 
 PARSER_FUNCTION(char*, copy_fixed_string, const char* start, int len) {
     char *out = cfg_pool_alloc(p->pool, len + 1);
@@ -204,7 +222,15 @@ PARSER_FUNCTION(int, parse_dict_body, cfg_obj_dict_t *dict, int is_outer) {
 PARSER_FUNCTION(int, parse_value, cfg_obj_t **obj) {
     skip_whitespace();
     switch (curr()) {
-        case '-':
+		case '"':
+		{
+			// TODO: parse string
+		}
+		case 'a'...'z':
+		{
+			
+		}
+		case '-':
         case '0'...'9':
         {
             struct parsed_number parsed;
