@@ -6,10 +6,10 @@
 #include "pool.h"
 
 typedef struct cfg_parser {
-	cfg_pool_t				*pool;
-	const char 				*input;
-	const char				*curr;
-	const char				*error;
+    cfg_pool_t              *pool;
+    const char              *input;
+    const char              *curr;
+    const char              *error;
 } cfg_parser_t;
 
 void cfg_parser_init(cfg_parser_t *parser, cfg_pool_t *pool, const char *input);
