@@ -81,20 +81,20 @@ int cfg_parse(cfg_parser_t *p, cfg_obj_dict_t **out) {
 // End Public Interface
 
 PARSER_FUNCTION(void, parser_skip_whitespace) {
-	do {
-		if (curr() == '#') {
-			while (curr() != '\n' && curr() != '\r' && curr() != '\0') {
-				next();
-			}
-		} else if (is_whitespace()) {
-			next();
-			while (is_whitespace()) {
-				next();
-			}
-		} else {
-			break;
-		}
-	} while(1);
+    do {
+        if (curr() == '#') {
+            while (curr() != '\n' && curr() != '\r' && curr() != '\0') {
+                next();
+            }
+        } else if (is_whitespace()) {
+            next();
+            while (is_whitespace()) {
+                next();
+            }
+        } else {
+            break;
+        }
+    } while(1);
 }
 
 PARSER_FUNCTION(char*, copy_fixed_string, const char* start, int len) {
@@ -222,71 +222,71 @@ PARSER_FUNCTION(int, parse_dict_body, cfg_obj_dict_t *dict, int is_outer) {
 PARSER_FUNCTION(int, parse_value, cfg_obj_t **obj) {
     skip_whitespace();
     switch (curr()) {
-		case '"':
-		{
-			next();
-			char *start = p->curr;
-			int length  = 0;
-			int escape	= 0;
-			
-			// loop 1 - measure string
-			while (1) {
-				if (is_eof()) {
-					ERROR("unexpected EOF when parsing string");
-				} else if (curr() == '\\') {
-					next();
-					if (is_eof()) {
-						ERROR("unexpected EOF when parsing string");
-					}
-					next();
-					length++;
-				} else if (curr() == '"') {
-					break;
-				} else {
-					next();
-					length++;
-				}
-			}
-			
-			PARSER_ALLOC(string, cfg_obj_string_t);
-			
-			char *raw_string = cfg_pool_alloc(p->pool, length + 1);
-			if (!raw_string) {
-				cfg_pool_free(p->pool, string);
-				ERROR("couldn't allocate string");
-			}
-			
-			// loop 2 - copy string
-			p->curr = start;
-			for (int i = 0; i < length; i++) {
-				if (curr() == '\\') {
-					next();
-					switch (curr()) {
-						case 'n': { raw_string[i] = '\n'; break; }
-						case 'r': { raw_string[i] = '\r'; break; }
-						case 't': { raw_string[i] = '\t'; break; }
-						case '"': { raw_string[i] = '"';  break; }
-						default : { ERROR("illegal escape character"); }
-					}
-				} else {
-					raw_string[i] = curr();
-					next();
-				}
-			}
-			
-			next(); // trailing "
-			
-			raw_string[length] = '\0';
-			cfg_init_string(string, raw_string);
-			*obj = (cfg_obj_t *)string;
-			
-			return PARSER_OK;
-		}
-		case 'a'...'z':
-		{
-			// TODO: parse boolean literal
-		}
-		case '-':
+        case '"':
+        {
+            next();
+            char *start = p->curr;
+            int length  = 0;
+            int escape  = 0;
+            
+            // loop 1 - measure string
+            while (1) {
+                if (is_eof()) {
+                    ERROR("unexpected EOF when parsing string");
+                } else if (curr() == '\\') {
+                    next();
+                    if (is_eof()) {
+                        ERROR("unexpected EOF when parsing string");
+                    }
+                    next();
+                    length++;
+                } else if (curr() == '"') {
+                    break;
+                } else {
+                    next();
+                    length++;
+                }
+            }
+            
+            PARSER_ALLOC(string, cfg_obj_string_t);
+            
+            char *raw_string = cfg_pool_alloc(p->pool, length + 1);
+            if (!raw_string) {
+                cfg_pool_free(p->pool, string);
+                ERROR("couldn't allocate string");
+            }
+            
+            // loop 2 - copy string
+            p->curr = start;
+            for (int i = 0; i < length; i++) {
+                if (curr() == '\\') {
+                    next();
+                    switch (curr()) {
+                        case 'n': { raw_string[i] = '\n'; break; }
+                        case 'r': { raw_string[i] = '\r'; break; }
+                        case 't': { raw_string[i] = '\t'; break; }
+                        case '"': { raw_string[i] = '"';  break; }
+                        default : { ERROR("illegal escape character"); }
+                    }
+                } else {
+                    raw_string[i] = curr();
+                    next();
+                }
+            }
+            
+            next(); // trailing "
+            
+            raw_string[length] = '\0';
+            cfg_init_string(string, raw_string);
+            *obj = (cfg_obj_t *)string;
+            
+            return PARSER_OK;
+        }
+        case 'a'...'z':
+        {
+            // TODO: parse boolean literal
+        }
+        case '-':
         case '0'...'9':
         {
             struct parsed_number parsed;
