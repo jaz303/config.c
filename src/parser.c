@@ -51,6 +51,7 @@ PARSER_FUNCTION(void, parser_skip_whitespace);
 PARSER_FUNCTION(char*, copy_fixed_string, const char* start, int len);
 PARSER_FUNCTION(int, parse_number, struct parsed_number *out);
 PARSER_FUNCTION(int, parse_fixed_int, int *out, int len);
+PARSER_FUNCTION(int, parse_boolean, const char *cmp, int val, cfg_obj_t **obj);
 PARSER_FUNCTION(int, parse_value, cfg_obj_t **obj);
 PARSER_FUNCTION(int, parse_array_body, cfg_obj_array_t *ary);
 PARSER_FUNCTION(int, parse_dict_body, cfg_obj_dict_t *dict, int is_outer);
@@ -161,6 +162,18 @@ PARSER_FUNCTION(int, parse_fixed_int, int *out, int len) {
         ERROR("trailing digits on fixed-length int");
 }
 
+PARSER_FUNCTION(int, parse_boolean, const char *cmp, int val, cfg_obj_t **obj) {
+    while (*cmp && *cmp == curr()) { cmp++; next(); }
+    if (*cmp == '\0') {
+        PARSER_ALLOC(integer, cfg_obj_integer_t);
+        cfg_init_integer(integer, val);
+        *obj = (cfg_obj_t *)integer;
+        return PARSER_OK;
+    } else {
+        ERROR("invalid boolean literal");
+    }
+}
+
 PARSER_FUNCTION(int, parse_array_body, cfg_obj_array_t *ary) {
     int count = 0;
     do {
@@ -225,7 +238,7 @@ PARSER_FUNCTION(int, parse_value, cfg_obj_t **obj) {
         case '"':
         {
             next();
-            char *start = p->curr;
+            const char *start = p->curr;
             int length  = 0;
             int escape  = 0;
             
@@ -282,9 +295,18 @@ PARSER_FUNCTION(int, parse_value, cfg_obj_t **obj) {
             
             return PARSER_OK;
         }
-        case 'a'...'z':
+        case 't': return parse_boolean(p, "true", 1, obj);
+        case 'f': return parse_boolean(p, "false", 0, obj);
+        case 'y': return parse_boolean(p, "yes", 1, obj);
+        case 'n': return parse_boolean(p, "no", 0, obj);
+        case 'o':
         {
-            // TODO: parse boolean literal
+            next();
+            if (curr() == 'n') {
+                return parse_boolean(p, "n", 1, obj);
+            } else {
+                return parse_boolean(p, "ff", 0, obj);
+            }
         }
         case '-':
         case '0'...'9':
