@@ -38,8 +38,8 @@ Syntax Example
 Example usage
 -------------
 
-    char            string_buffer[32];      /* longest decoded string value == 32 chars */
-    char            context_buffer[32];     /* longest context, including `.` separators == 32 chars */
+    char            string_buffer[32];      /* longest decoded string value == 31 chars */
+    char            context_buffer[32];     /* longest context, including `.` separators == 31 chars */
     
     void on_value(const char *key, config_type_t type, void *value_ptr) {
         
