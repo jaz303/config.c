@@ -11,39 +11,45 @@ Syntax Example
 --------------
 
     # '#' is a comment and the rest of the line will be ignored.
-
-    # Basic types
+    
     an_integer      21;
-    a_float         -10.23;
-    a_boolean       yes;      # also: true, on. stored as integer 1
-    other_boolean   no;       # also: false, off. stored as integer 0
+    a_float         -10.32;
+    a_boolean       yes;            # also: `true`, `on`.
+    other_boolean   no;             # also: `false`, `off`.
+    string          "foof bar baz";
+    ip_address      192.168.1.100;
     
-    string          "foo bar baz";
+    # nesting
+    namespace {
+        foo 1;
+        bar 2;
+        baz 3;
+        nested {
+            bleem: 10;
+        }
+    }
     
-    # all components are fixed-width.
-    a_date          @2011-04-10;
-    
-    # all components are fixed-width. milliseconds are optional.
-    a_date_time     @2011-04-10T19:58:00.123;
-    
-    # integer vector
-    # all vectors have a max of 3 components; if less are present, remaining
-    # components will be zero.
-    an_int_vector   %(1, 2, 3);
-    
-    # float vector
-    a_float_vector  (1.0, 2.0, 3.0);
+    # equivalent to:
+    namespace.foo 1;
+    namespace.bar 2;
+    namespace.baz 3;
+    namespace.nested.bleem 10;
 
-    # arrays contain an "unlimited" number of values.
-    # they are not restricted to values of a single type.
-    an_array        [ 1, 1.0, "hello", yes, yes, no ];
+Example usage
+-------------
+
+    char            string_buffer[32];      /* longest decoded string value == 32 chars */
+    char            context_buffer[32];     /* longest context, including `.` separators == 32 chars */
     
-    # dictionaries are ordered maps of key => value
-    # any key beginning with '$' will be removed from the dictionary
-    # before being returned.
-    a_dictionary {
-      key_1   "value1";
-      key_2   1.23;
-      key_3   yes;
-      $tmp    "foo";
-    };
+    void on_value(const char *key, config_type_t type, void *value_ptr) {
+        
+    }
+    
+    config_init(&config, context_buffer, 32, string_buffer, 32, on_value);
+    
+    FILE *fd = fopen("test.cfg", "r");
+    while (!feof(fd)) config_put(&config, fgetc(fd));
+    int status = config_end();
+    
+    
+    

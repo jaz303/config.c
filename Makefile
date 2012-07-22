@@ -1,5 +1,5 @@
-CC	= gcc
-CFLAGS	= -Isrc -Iinclude -O2 -DNDEBUG -std=c99
+CC		= gcc
+CFLAGS	= -Iinclude -O2 -DNDEBUG -std=c99
 
 %.o: %.c
 	$(CC) $(CFLAGS) -c -o $@ $<
@@ -7,16 +7,8 @@ CFLAGS	= -Isrc -Iinclude -O2 -DNDEBUG -std=c99
 #
 # Default target
 
-default: build/config
-
-APPLICATION_OBJS =	src/object.o \
-			src/parser.o \
-			src/pool.o \
+OBJ		=	src/config.o \
 			src/util.o
-
-DEBUG_OBJS = src/debug.o
-
-OBJS = $(APPLICATION_OBJS) $(DEBUG_OBJS)
 
 obj: $(OBJS)
 
@@ -27,6 +19,6 @@ clean:
 #
 # Build
 
-build/test: obj
-	if [ ! -d build ]; then mkdir build; fi
-	$(CC) $(CFLAGS) -o build/test src/test.c $(OBJS) $(LDFLAGS)
+# build/test: obj
+# 	if [ ! -d build ]; then mkdir build; fi
+# 	$(CC) $(CFLAGS) -o build/test src/test.c $(OBJS) $(LDFLAGS)
